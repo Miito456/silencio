@@ -1,0 +1,19 @@
+{
+  "name": "silencio-visual-languages",
+  "version": "1.0.0",
+  "description": "Silencio — A warm-paper gallery vitrine where every element earns its space against negative volume.",
+  "scripts": {
+    "start": "python -m http.server 3000",
+    "test": "python test_suite.py",
+    "serve": "npx serve ."
+  },
+  "keywords": [
+    "design-system",
+    "gallery",
+    "vitrine",
+    "typography",
+    "silencio"
+  ],
+  "author": "Silencio Ateliers",
+  "license": "UNLICENSED"
+}

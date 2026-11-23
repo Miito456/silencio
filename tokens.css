@@ -1,0 +1,83 @@
+/* Silencio Design Tokens */
+:root {
+  /* Colors */
+  --color-ink-black: #000000;
+  --color-paper-warm-gray: #dbdad9;
+  --color-graphite-border: #808080;
+  --color-bleach-white: #ffffff;
+
+  /* Typography — Font Families */
+  --font-haasr: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Neue Haas Grotesk", sans-serif;
+  --font-haast: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Neue Haas Grotesk Display", sans-serif;
+  --font-pt-mono: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Typography — Scale */
+  --text-micro: 9px;
+  --leading-micro: 1.2;
+
+  --text-label: 11px;
+  --leading-label: 1.2;
+
+  --text-nav: 12px;
+  --leading-nav: 1.2;
+
+  --text-body: 16px;
+  --leading-body: 1.4;
+
+  --text-subheading: 22px;
+  --leading-subheading: 1.1;
+
+  --text-heading-sm: 39px;
+  --leading-heading-sm: 1.0;
+
+  --text-heading: 58px;
+  --leading-heading: 0.9;
+
+  --text-display: 141px;
+  --leading-display: 0.9;
+
+  /* Typography — Weights */
+  --font-weight-thin: 100;
+  --font-weight-regular: 400;
+  --font-weight-bold: 700;
+
+  /* Spacing Scale (Base: 4px) */
+  --spacing-4: 4px;
+  --spacing-6: 6px;
+  --spacing-7: 7px;
+  --spacing-10: 10px;
+  --spacing-14: 14px;
+  --spacing-16: 16px;
+  --spacing-17: 17px;
+  --spacing-22: 22px;
+  --spacing-29: 29px;
+  --spacing-43: 43px;
+  --spacing-72: 72px;
+  --spacing-144: 144px;
+  --spacing-173: 173px;
+
+  /* Layout */
+  --page-max-width: 1440px;
+  --section-gap: 43px;
+  --card-padding: 29px;
+  --element-gap: 7px;
+
+  /* Border Radius */
+  --radius-tags: 9999px;
+  --radius-cards: 7.2px;
+  --radius-buttons: 129.6px;
+  --radius-surfaces: 43.2px;
+
+  /* Standard Radii Aliases */
+  --radius-lg: 7.2px;
+  --radius-3xl: 43.2px;
+  --radius-full: 129.6px;
+
+  /* Surfaces */
+  --surface-page-canvas: #ffffff;
+  --surface-paper-card: #dbdad9;
+  --surface-ink-surface: #000000;
+
+  /* Gradient System */
+  --gradient-sanctioned: linear-gradient(0deg, #dbdad9 0%, #ffffff 100%);
+}

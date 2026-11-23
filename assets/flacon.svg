@@ -1,0 +1,21 @@
+<svg width="400" height="500" viewBox="0 0 400 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Monolithic Flacon: Pure minimalist perfume vessel, no shadows, no glows -->
+  <!-- Stopper / Cap in Ink Black -->
+  <rect x="160" y="70" width="80" height="60" fill="#000000" rx="2" />
+  <rect x="185" y="130" width="30" height="15" fill="#808080" />
+  
+  <!-- Flacon Body: Pure monolithic form -->
+  <rect x="110" y="145" width="180" height="260" fill="#dbdad9" rx="7.2" />
+  <rect x="120" y="155" width="160" height="240" fill="#ffffff" />
+  
+  <!-- Interior Void / Fragrance Core -->
+  <rect x="140" y="190" width="120" height="180" fill="#dbdad9" />
+  <rect x="145" y="195" width="110" height="170" fill="#ffffff" />
+  
+  <!-- Minimalist Core Pillar -->
+  <rect x="195" y="145" width="10" height="190" fill="#000000" />
+  <circle cx="200" cy="335" r="4" fill="#000000" />
+  
+  <!-- Fine Hairline Detail -->
+  <line x1="140" y1="210" x2="260" y2="210" stroke="#808080" stroke-width="1" />
+</svg>

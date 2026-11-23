@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coca-Cola 3D Dynamic Scroll — Demostración Técnica</title>
+  
+  <link rel="stylesheet" href="./tokens.css">
+  <link rel="stylesheet" href="./styles.css">
+
+  <style>
+    /* Estilos específicos para la demo de scroll 3D */
+    body {
+      background: #f4f3f2;
+      color: #000000;
+      overflow-x: hidden;
+      font-family: var(--font-haasr);
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Canvas 3D fijado a toda la pantalla */
+    #webgl-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* Secciones de contenido */
+    .scroll-section {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      z-index: 20;
+    }
+
+    .hero-content {
+      max-width: 600px;
+    }
+
+    .hero-title {
+      font-family: var(--font-haast);
+      font-size: clamp(52px, 8vw, 110px);
+      line-height: 0.9;
+      font-weight: 100;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+    }
+
+    .telemetry-card {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+      border: 1px solid #000;
+      border-radius: 7.2px;
+      padding: 16px 20px;
+      z-index: 100;
+      font-family: var(--font-pt-mono);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .telemetry-card span {
+      font-weight: bold;
+      color: #c8102e;
+    }
+
+    .control-panel {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 100;
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-pill {
+      background: #ffffff;
+      border: 1px solid #000000;
+      border-radius: 129.6px;
+      padding: 10px 22px;
+      font-family: var(--font-haasr);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-pill:hover {
+      background: #000000;
+      color: #ffffff;
+    }
+
+    .scan-laser {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 320px;
+      height: 2px;
+      background: #ff0000;
+      box-shadow: 0 0 12px #ff0000;
+      display: none;
+      z-index: 15;
+    }
+
+    .scan-laser.active {
+      display: block;
+      animation: laserPulse 0.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes laserPulse {
+      from { opacity: 0.3; }
+      to { opacity: 1; }
+    }
+
+    .side-text-block {
+      max-width: 440px;
+      background: rgba(219, 218, 217, 0.85);
+      backdrop-filter: blur(4px);
+      padding: 32px;
+      border-radius: 7.2px;
+    }
+
+    .right-aligned {
+      margin-left: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Canvas WebGL fijado en segundo plano -->
+  <canvas id="webgl-canvas"></canvas>
+
+  <!-- Panel de control flotante -->
+  <div class="control-panel">
+    <button id="toggle-texture" class="btn-pill">Textura: Coca-Cola / Silencio</button>
+    <a href="index.html" class="btn-pill" style="text-decoration:none;">&larr; Volver a Silencio.es</a>
+  </div>
+
+  <!-- Telemetría en tiempo real -->
+  <div class="telemetry-card">
+    <div style="font-weight: bold; margin-bottom: 4px; border-bottom: 1px solid #ccc; padding-bottom: 4px;">
+      3D SCROLL TELEMETRY
+    </div>
+    <div>SCROLL: <span id="tel-scroll">0%</span></div>
+    <div>CAN Y: <span id="tel-y">0.00</span></div>
+    <div>CAN ROTATION: <span id="tel-rot">0°</span></div>
+    <div>CAN TILT (Z): <span id="tel-tilt">0°</span></div>
+  </div>
+
+  <!-- Línea láser de escaneo -->
+  <div id="laser" class="scan-laser"></div>
+
+  <!-- SECCIÓN 1: HERO -->
+  <section id="sec-1" class="scroll-section">
+    <div class="hero-content">
+      <div class="museum-label" style="margin-bottom: 16px;">
+        PROTOTIPO · SCROLL DINÁMICO 3D
+      </div>
+      <h1 class="hero-title">
+        ORIGINAL<br>REFRESHMENT
+      </h1>
+      <p class="text-body" style="font-size: 19px; line-height: 1.3; margin-bottom: 28px;">
+        Demostración del efecto de la lata bajando y girando en 3D mientras haces scroll, exactamente como en el sitio de Silencio.
+      </p>
+      <div class="museum-label">
+        HAZ SCROLL HACIA ABAJO PARA ACTIVAR LA ROTACIÓN &darr;
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: ROTACIÓN Y DESCENSO -->
+  <section id="sec-2" class="scroll-section">
+    <div class="side-text-block">
+      <span class="museum-label">FASE 01 / CINEMÁTICA Y ROTACIÓN</span>
+      <h2 class="text-heading-sm" style="margin: 14px 0;">Perspectiva Inclinada</h2>
+      <p class="text-body">
+        Al hacer scroll, <strong>GSAP ScrollTrigger</strong> interpola la posición y orientación de la lata:
+      </p>
+      <ul style="margin: 16px 0 0 20px; font-size: 14px; line-height: 1.8;">
+        <li><strong>Eje Y:</strong> Desciende suavemente al ritmo del scroll (<code>scrub: 0.2</code>).</li>
+        <li><strong>Rotación Y:</strong> Gira 360° mostrando el logo y las gotas de condensación.</li>
+        <li><strong>Inclinación Z:</strong> Se inclina a ~35° (recreando el ángulo de tu render).</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: INFORMACIÓN NUTRICIONAL -->
+  <section id="sec-3" class="scroll-section">
+    <div class="side-text-block right-aligned">
+      <span class="museum-label">FASE 02 / VALOR NUTRICIONAL</span>
+      <h2 class="text-heading-sm" style="margin: 14px 0;">330 ml de Sabor</h2>
+      
+      <table class="catalog-table" style="margin-top: 16px; font-size: 13px;">
+        <tbody>
+          <tr><td>Inconformismo</td><td class="mono-cell">100%</td></tr>
+          <tr><td>Gas &amp; Burbujas</td><td class="mono-cell">95%</td></tr>
+          <tr><td>Temperatura</td><td class="mono-cell">4° C</td></tr>
+          <tr><td>Boring Projects</td><td class="mono-cell">0%</td></tr>
+        </tbody>
+      </table>
+      <p class="micro-caption" style="margin-top: 14px;">
+        * Ingredientes: Concepto, 3D, Three.js, GSAP ScrollTrigger.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: ESCANEO Y FINAL -->
+  <section id="sec-4" class="scroll-section" style="text-align: center; align-items: center;">
+    <div style="max-width: 600px;">
+      <span class="museum-label">FASE 03 / LECTURA LÁSER</span>
+      <h2 class="text-heading" style="margin: 20px 0;">Llegada al Checkout</h2>
+      <p class="text-body" style="text-align: center; margin-bottom: 28px;">
+        La lata desciende hasta el punto de escaneo del supermercado donde suena el <em>BEEP</em> de la caja registradora.
+      </p>
+      <button class="btn-pill" id="scan-trigger" style="padding: 14px 32px; font-size: 14px;">
+        ESCANEAR LATA (BEEP)
+      </button>
+    </div>
+  </section>
+
+  <!-- Librerías Three.js y GSAP ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+  <script>
+    // Registrar el plugin ScrollTrigger de GSAP
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Audio del escáner
+    const beepAudio = new Audio('./beep.mp3');
+
+    // 1. CONFIGURACIÓN DE THREE.JS
+    const canvas = document.getElementById('webgl-canvas');
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 0, 8);
+
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+
+    // 2. ILUMINACIÓN PARA REALISMO METÁLICO
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+    scene.add(ambientLight);
+
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
+    keyLight.position.set(5, 8, 5);
+    scene.add(keyLight);
+
+    const fillLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    fillLight.position.set(-5, 0, 5);
+    scene.add(fillLight);
+
+    const rimLight = new THREE.DirectionalLight(0xffffff, 2.0);
+    rimLight.position.set(0, -5, -3);
+    scene.add(rimLight);
+
+    // 3. CARGA DE TEXTURAS (COCA-COLA vs ORIGINAL)
+    const textureLoader = new THREE.TextureLoader();
+    const cokeTexture = textureLoader.load('img/coca_cola_wrap.jpg');
+    cokeTexture.flipY = false;
+
+    let originalTexture = null;
+    let isCoke = true;
+    let canMesh = null;
+    let canGroup = new THREE.Group();
+    scene.add(canGroup);
+
+    // 4. CARGA DEL MODELO 3D (.GLB DE LA LATA 330ML)
+    const gltfLoader = new THREE.GLTFLoader();
+    
+    gltfLoader.load('can_silencio_c.glb', (gltf) => {
+      const model = gltf.scene;
+      
+      // Ajustar escala y posición inicial
+      model.scale.set(0.65, 0.65, 0.65);
+      
+      model.traverse((child) => {
+        if (child.isMesh) {
+          // El material Mat.003 corresponde al cuerpo de la lata
+          if (child.material && child.material.name === 'Mat.003') {
+            canMesh = child;
+            originalTexture = child.material.map;
+            // Aplicar la textura de Coca-Cola
+            child.material.map = cokeTexture;
+            child.material.metalness = 0.55;
+            child.material.roughness = 0.22;
+            child.material.needsUpdate = true;
+          } else if (child.material) {
+            // Tapa y base de aluminio
+            child.material.metalness = 0.95;
+            child.material.roughness = 0.15;
+          }
+        }
+      });
+
+      canGroup.add(model);
+      
+      // Iniciar las animaciones de ScrollTrigger una vez cargado el modelo
+      setupScrollAnimations();
+    });
+
+    // 5. ANIMACIONES GSAP VINCULADAS AL SCROLL (SCROLLTRIGGER)
+    function setupScrollAnimations() {
+      // Posición inicial
+      canGroup.position.set(1.5, 0.2, 0);
+      canGroup.rotation.set(0.1, -0.4, -0.05);
+
+      // Movimiento general a lo largo de toda la página
+      // ScrollTrigger vincula el progreso del scroll (0 a 1) directamente con la posición y rotación
+      const timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: "body",
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 0.4, // Suavizado cinemático
+          onUpdate: (self) => {
+            // Actualizar telemetría visual
+            document.getElementById('tel-scroll').textContent = Math.round(self.progress * 100) + '%';
+            document.getElementById('tel-y').textContent = canGroup.position.y.toFixed(2);
+            document.getElementById('tel-rot').textContent = Math.round((canGroup.rotation.y * 180 / Math.PI) % 360) + '°';
+            document.getElementById('tel-tilt').textContent = Math.round(canGroup.rotation.z * 180 / Math.PI) + '°';
+          }
+        }
+      });
+
+      // Paso 1: En Sección 1 -> Sección 2 (Baja, se mueve al centro-derecha y gira 360°)
+      timeline.to(canGroup.position, {
+        x: 1.8,
+        y: -0.6,
+        z: 0.5,
+        duration: 1
+      }, 0);
+
+      timeline.to(canGroup.rotation, {
+        x: 0.35,              // Inclinación hacia adelante
+        y: Math.PI * 2 + 0.5, // Giro completo sobre su eje
+        z: -0.55,             // Inclinación lateral estilizada (35° como tu foto)
+        duration: 1
+      }, 0);
+
+      // Paso 2: En Sección 2 -> Sección 3 (Pasa hacia la izquierda/centro para dejar leer la tabla)
+      timeline.to(canGroup.position, {
+        x: -1.6,
+        y: -0.3,
+        z: 1.0,
+        duration: 1
+      }, 1);
+
+      timeline.to(canGroup.rotation, {
+        x: -0.2,
+        y: Math.PI * 4,       // Otro giro completo
+        z: 0.4,
+        duration: 1
+      }, 1);
+
+      // Paso 3: Sección 3 -> Sección 4 (Baja al centro directo para ser escaneada)
+      timeline.to(canGroup.position, {
+        x: 0,
+        y: 0.5,
+        z: 1.8,
+        duration: 1
+      }, 2);
+
+      timeline.to(canGroup.rotation, {
+        x: 0,
+        y: Math.PI * 5,
+        z: 0,
+        duration: 1
+      }, 2);
+
+      // Trigger de sonido al llegar a la sección final
+      ScrollTrigger.create({
+        trigger: "#sec-4",
+        start: "top 60%",
+        onEnter: () => triggerScanEffect()
+      });
+    }
+
+    // Efecto de láser y sonido
+    function triggerScanEffect() {
+      const laser = document.getElementById('laser');
+      laser.style.top = '50%';
+      laser.classList.add('active');
+      beepAudio.currentTime = 0;
+      beepAudio.play().catch(() => {});
+
+      setTimeout(() => {
+        laser.classList.remove('active');
+      }, 600);
+    }
+
+    document.getElementById('scan-trigger').addEventListener('click', triggerScanEffect);
+
+    // Botón para alternar textura entre Coca-Cola y Silencio
+    document.getElementById('toggle-texture').addEventListener('click', () => {
+      if (!canMesh) return;
+      isCoke = !isCoke;
+      canMesh.material.map = isCoke ? cokeTexture : originalTexture;
+      canMesh.material.metalness = isCoke ? 0.55 : 0.2;
+      canMesh.material.roughness = isCoke ? 0.22 : 0.4;
+      canMesh.material.needsUpdate = true;
+    });
+
+    // 6. RENDER LOOP Y AJUSTE DE TAMAÑO
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
