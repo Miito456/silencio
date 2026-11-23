@@ -6,9 +6,9 @@ export const APP_CONFIG = {
   CANVAS_ID: 'webgl-canvas',
   
   PATHS: {
-    MODEL_CAN: 'can_silencio_c.glb',
+    MODEL_CAN: 'models/can_silencio_c.glb',
     TEXTURE_COKE: 'img/coca_cola_wrap.jpg',
-    AUDIO_BEEP: 'beep.mp3'
+    AUDIO_BEEP: 'audio/beep.mp3'
   },
 
   CAMERA: {

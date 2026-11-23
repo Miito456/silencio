@@ -26,40 +26,54 @@
 
 ---
 
-## 🗂️ Estructura de Archivos y Arquitectura Limpia (SOLID)
+## 🗂️ Estructura Limpia del Proyecto
 
-El código interactivo de la demostración 3D ha sido desacoplado y estructurado siguiendo **Clean Architecture**, **Clean Code** y los principios **SOLID**:
+Todos los archivos han sido organizados en directorios específicos, manteniendo la raíz libre de archivos sueltos:
 
 ```text
 Silencio/
 ├── index.html                   # Sitio web de Silencio.es (Supermercado Digital)
 ├── coca-cola-scroll.html        # Demostración del Scroll 3D Dinámico con lata de Coca-Cola
-├── test_suite.py                # Suite de pruebas automatizada de recursos del servidor
-├── studio_small_09_1k_low.hdr   # Mapa de iluminación HDRI para Three.js
-├── src/                         # Código modular desacoplado (Clean Architecture)
-│   ├── App.js                   # Composition Root & Bootstrap (Dependency Inversion)
+├── package.json                 # Configuración del proyecto y scripts
+├── README.md                    # Documentación y avisos legales
+├── .gitignore                   # Exclusiones de control de versiones
+├── src/                         # Código modular con Clean Architecture (SOLID)
+│   ├── App.js                   # Composition Root & Bootstrap (DIP)
 │   ├── core/
-│   │   ├── Config.js            # Constantes y configuraciones centralizadas (No magic numbers)
+│   │   ├── Config.js            # Constantes centralizadas y rutas
 │   │   └── EventBus.js          # Patrón Pub/Sub para comunicación desacoplada
 │   ├── services/
-│   │   ├── AudioService.js      # Servicio de audio y reproducción segura (SRP)
-│   │   ├── ModelLoaderService.js# Cargador asíncrono de modelos GLTF y texturas con Promesas (SRP)
-│   │   └── TelemetryService.js  # Actualización de telemetría en el DOM sin thrashing (SRP)
+│   │   ├── AudioService.js      # Servicio de audio (SRP)
+│   │   ├── ModelLoaderService.js# Carga asíncrona de 3D/texturas con Promesas y caché (SRP)
+│   │   └── TelemetryService.js  # Telemetría del DOM (SRP)
 │   ├── graphics/
-│   │   ├── SceneManager.js      # Gestión de Three.js (Scene, Camera, Lights, Resize, Render Loop) (SRP)
+│   │   ├── SceneManager.js      # Gestión de Three.js (Scene, Camera, Lights, Resize) (SRP)
 │   │   └── CanProductModel.js   # Entidad 3D de la lata (materiales PBR, cambio de textura) (OCP)
 │   ├── animation/
-│   │   └── ScrollAnimator.js    # Controlador de GSAP ScrollTrigger y cinemática (SRP)
+│   │   └── ScrollAnimator.js    # Cinemática de GSAP ScrollTrigger (SRP)
 │   └── ui/
-│       └── UIController.js      # Manejador de eventos del DOM y botones (SRP/DIP)
-├── assets/
-│   ├── index-964e5b23.css       # Hoja de estilos original con layout y tipografías
-│   └── index-5f9b5534.js        # Script original compilado de Silencio.es
-├── fonts/                       # Tipografías oficiales Neue Haas Grotesk y PT Mono
+│       └── UIController.js      # Manejador de eventos y botones (SRP/DIP)
+├── models/                      # Modelos 3D GLTF (.glb) y mapas de iluminación (.hdr)
+│   ├── basket_c.glb             # Cesta de supermercado
+│   ├── can_silencio_c.glb       # Lata 330ml (#01 Digital Branding)
+│   ├── bolsa_silencio_c.glb     # Bolsa de snacks (#02 Visual Languages)
+│   ├── zumo_silencio_c.glb      # Brick 200ml (#03 Interactive Websites)
+│   ├── chocolatina_silencio_c.glb # Chocolatina (#04 Disruptive Comm.)
+│   └── studio_small_09_1k_low.hdr # Iluminación de estudio HDRI para Three.js
+├── audio/                       # Efectos de sonido (.mp3)
+│   ├── beep.mp3                 # Sonido de escáner láser de caja registradora
+│   ├── print1.2.mp3             # Sonido de máquina impresora de tickets
+│   └── print2.1.mp3             # Sonido secundario de caja
 ├── img/                         # Gráficos vectoriales, texturas y fotografías
-├── models/                      # Modelos 3D GLTF (.glb)
-├── audio/                       # Efectos de sonido
-└── package.json                 # Scripts de ejecución
+│   ├── icons/                   # Favicons, webmanifest y logos de app
+│   ├── coca_cola_wrap.jpg       # Textura cilíndrica de Coca-Cola
+│   ├── barcode.svg, fire.svg... # Iconografía original
+│   └── *.jpg                    # Fotos de producto y editorial
+├── fonts/                       # Tipografías oficiales Neue Haas Grotesk y PT Mono
+├── styles/                      # Hojas de estilo y tokens de diseño
+├── docs/                        # Especificación y documentación de estilo (STYLE_GUIDE.md)
+├── tests/                       # Suite de pruebas automatizada (test_suite.py)
+└── assets/                      # Bundles de producción (index.css e index.js)
 ```
 
 ### Principios SOLID Aplicados:
